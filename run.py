@@ -23,7 +23,7 @@ from lime import lime_image
 from skimage.segmentation import mark_boundaries
 from matplotlib import pyplot as plt
 import numpy as np
-from keras.callbacks import EarlyStopping,ReduceLROnPlatea
+from keras.callbacks import EarlyStopping,ReduceLROnPlateau
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
