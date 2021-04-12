@@ -52,7 +52,6 @@ class Datasets():
         file_list = []
         for root, _, files in os.walk(os.path.join(self.data_path)):
             for name in files:
-                print(name)
                 if name.endswith(".jpeg"):
                     file_list.append(os.path.join(root, name))
 
@@ -65,6 +64,7 @@ class Datasets():
         # Allocate space in memory for images
         data_sample = np.zeros(
             (hp.preprocess_sample_size, hp.img_size, hp.img_size, 3))
+        print(data_sample.size)
 
 
         # Import images
@@ -216,9 +216,9 @@ class Datasets():
         #should classes be = classes_for_flow?
 
         train_data = data_gen.flow_from_directory(directory=path, target_size=(img_size, img_size),
-                                                     class_mode="categorical", batch_size=hp.batch_size, subset="training")
+                                                     class_mode="sparse", batch_size=hp.batch_size, classes=classes_for_flow, subset="training")
         test_data = data_gen.flow_from_directory(directory=path, target_size=(img_size, img_size),
-                                                    class_mode="categorical", batch_size=hp.batch_size, subset="validation")
+                                                    class_mode="sparse", batch_size=hp.batch_size, classes=classes_for_flow, subset="validation")
 
         data_gen = train_data
         # Setup the dictionaries if not already done

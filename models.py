@@ -32,7 +32,7 @@ class ASLModel(tf.keras.Model):
             Flatten(),
             Dense(128,activation="relu"),
             Dropout(0.2),
-            Dense(36,activation="softmax")
+            Dense(hp.num_classes,activation="softmax")
         ]
 
     def call(self, x):
