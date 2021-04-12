@@ -23,7 +23,6 @@ from lime import lime_image
 from skimage.segmentation import mark_boundaries
 from matplotlib import pyplot as plt
 import numpy as np
-from keras.callbacks import EarlyStopping,ReduceLROnPlateau
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -133,8 +132,8 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
     # Begin training
     print(init_epoch)
 
-    earlystop=EarlyStopping(patience=10)
-    learning_rate_reduce=ReduceLROnPlateau(monitor="val_acc",min_lr=0.001)
+    earlystop=tf.keras.callbacks.EarlyStopping(patience=10)
+    learning_rate_reduce=tf.keras.callbacks.ReduceLROnPlateau(monitor="val_acc",min_lr=0.001)
     callback_list.append(earlystop)
     callback_list.append(learning_rate_reduce)
     model.fit(

@@ -52,7 +52,8 @@ class Datasets():
         file_list = []
         for root, _, files in os.walk(os.path.join(self.data_path)):
             for name in files:
-                if name.endswith(".jpg"):
+                print(name)
+                if name.endswith(".jpeg"):
                     file_list.append(os.path.join(root, name))
 
         # Shuffle filepaths
@@ -64,6 +65,7 @@ class Datasets():
         # Allocate space in memory for images
         data_sample = np.zeros(
             (hp.preprocess_sample_size, hp.img_size, hp.img_size, 3))
+
 
         # Import images
         for i, file_path in enumerate(file_list):
