@@ -23,10 +23,19 @@ class ASLModel(tf.keras.Model):
 
         self.architecture = [
             # Block 1
-            Conv2D(16,(3,3),activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
+            Conv2D(64,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
+            Conv2D(64,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
             MaxPool2D(2,2),
             Dropout(0.2),
-            Conv2D(32,(3,3),activation="relu"),
+            Conv2D(128,(3,3),padding="same",activation="relu"),
+            Conv2D(128,(3,3),padding="same",activation="relu"),
+            MaxPool2D(2,2),
+            Conv2D(256,(3,3),padding="same",activation="relu"),
+            Conv2D(256,(3,3),padding="same",activation="relu"),
+            Conv2D(256,(3,3),padding="same",activation="relu"),
+            MaxPool2D(2,2),
+            Conv2D(512,(3,3),padding="same",activation="relu"),
+            Conv2D(512,(3,3),padding="same",activation="relu"),
             MaxPool2D(2,2),
             Dropout(0.2),
             Flatten(),
