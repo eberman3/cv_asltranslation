@@ -198,10 +198,10 @@ class CustomModelSaver(tf.keras.callbacks.Callback):
             if self.task == '1':
                 self.model.save_weights(
                     self.checkpoint_dir + os.sep + "your." + save_name)
-            else:
+            #else:
                 # Only save weights of classification head of VGGModel
-                self.model.head.save_weights(
-                    self.checkpoint_dir + os.sep + "vgg." + save_name)
+                #self.model.head.save_weights(
+                #    self.checkpoint_dir + os.sep + "vgg." + save_name)
 
             # Ensure max_num_weights is not exceeded by removing
             # minimum weight
