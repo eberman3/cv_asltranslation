@@ -1,5 +1,5 @@
 """
-Project 6 - CNNs
+Project 4 - CNNs
 CS1430 - Computer Vision
 Brown University
 """
@@ -36,10 +36,8 @@ class Datasets():
         self.calc_mean_and_std()
 
         # Setup data generators
-        self.train_data = self.get_data(
-            os.path.join(self.data_path, "train/"), task == '3', True, True)
-        self.test_data = self.get_data(
-            os.path.join(self.data_path, "test/"), task == '3', False, False)
+        ds_asl_dir = data_path
+        data_gen, self.train_data, self.test_data = self.get_data(path=ds_asl_dir, shuffle=True, augment=True)
 
     def calc_mean_and_std(self):
         """ Calculate mean and standard deviation of a sample of the
@@ -52,7 +50,7 @@ class Datasets():
 
         # Get list of all images in training directory
         file_list = []
-        for root, _, files in os.walk(os.path.join(self.data_path, "train/")):
+        for root, _, files in os.walk(os.path.join(self.data_path)):
             for name in files:
                 if name.endswith(".jpg"):
                     file_list.append(os.path.join(root, name))
@@ -110,21 +108,11 @@ class Datasets():
             img - numpy array of shape (image size, image size, 3)
         """
 
-        # TODO: Standardize the input image. Use self.mean and self.std
-        #       that were calculated in calc_mean_and_std() to perform
-        #       the standardization.
-        # =============================================================
-
         img = (img - self.mean)/self.std
-
-        # =============================================================
-
         return img
 
     def preprocess_fn(self, img):
         """ Preprocess function for ImageDataGenerator. """
-
-        #FIX THIs
 
         if self.task == '3':
             img = tf.keras.applications.vgg16.preprocess_input(img)
@@ -133,16 +121,40 @@ class Datasets():
             img = self.standardize(img)
         return img
 
+    def custom_preprocess_fn(self, img):
+        """ Custom preprocess function for ImageDataGenerator. """
 
-    def get_data(self, path, is_vgg, shuffle, augment):
+        if self.task == '3':
+            img = tf.keras.applications.vgg16.preprocess_input(img)
+        else:
+            img = img / 255.
+            img = self.standardize(img)
+
+        # EXTRA CREDIT:
+        # Write your own custom data augmentation procedure, creating
+        # an effect that cannot be achieved using the arguments of
+        # ImageDataGenerator. This can potentially boost your accuracy
+        # in the validation set. Note that this augmentation should
+        # only be applied to some input images, so make use of the
+        # 'random' module to make sure this happens. Also, make sure
+        # that ImageDataGenerator uses *this* function for preprocessing
+        # on augmented data.
+
+        if random.random() < 0.3:
+            img = img + tf.random.uniform(
+                (hp.img_size, hp.img_size, 1),
+                minval=-0.1,
+                maxval=0.1)
+
+        return img
+
+    def get_data(self, path, shuffle, augment):
         """ Returns an image data generator which can be iterated
         through for images and corresponding class labels.
 
         Arguments:
             path - Filepath of the data being imported, such as
                    "../data/train" or "../data/test"
-            is_vgg - Boolean value indicating whether VGG preprocessing
-                     should be applied to the images.
             shuffle - Boolean value indicating whether the data should
                       be randomly shuffled.
             augment - Boolean value indicating whether the data should
@@ -165,17 +177,13 @@ class Datasets():
 
             data_gen = tf.keras.preprocessing.image.ImageDataGenerator(
                 preprocessing_function=self.preprocess_fn,
-                featurewise_center=False,  #set input mean to 0 over  dataset
-                samplewise_center=False,  #set sample mean to 0
-                featurewise_std_normalization=False,  # divide by std 
-                samplewise_std_normalization=False,  # divide each input by its std)
-
-                rotation_range=0,
-		        zoom_range=0.15,
-                width_shift_range=0.2,
-                height_shift_range=0.2,
-                shear_range=0.15)
-    
+                rotation_range=15, 
+                rescale=1/255, 
+                zoom_range=0.1, 
+                horizontal_flip=True,
+                width_shift_range=0.1,
+                height_shift_range=0.1,
+                validation_split=0.2)
 
             # ============================================================
         else:
@@ -184,7 +192,7 @@ class Datasets():
                 preprocessing_function=self.preprocess_fn)
 
         # VGG must take images of size 224x224
-        img_size = 224 if is_vgg else hp.img_size
+        img_size = hp.img_size
 
         classes_for_flow = None
 
@@ -193,25 +201,34 @@ class Datasets():
             classes_for_flow = self.classes
 
         # Form image data generator from directory structure
-        data_gen = data_gen.flow_from_directory(
-            path,
-            target_size=(img_size, img_size),
-            class_mode='sparse',
-            batch_size=hp.batch_size,
-            shuffle=shuffle,
-            classes=classes_for_flow)
+        # data_gen = data_gen.flow_from_directory(
+        #     path,
+        #     target_size=(img_size, img_size),
+        #     class_mode='sparse',
+        #     batch_size=hp.batch_size,
+        #     shuffle=shuffle,
+        #     classes=classes_for_flow)
 
+        #should class mode be sparse?
+        #should shuffle be turned on?
+        #should classes be = classes_for_flow?
+
+        train_data = data_gen.flow_from_directory(directory=path, target_size=(img_size, img_size),
+                                                     class_mode="categorical", batch_size=hp.batch_size, subset="training")
+        test_data = data_gen.flow_from_directory(directory=path, target_size=(img_size, img_size),
+                                                    class_mode="categorical", batch_size=hp.batch_size, subset="validation")
+
+        data_gen = train_data
         # Setup the dictionaries if not already done
         if not bool(self.idx_to_class):
             unordered_classes = []
             for dir_name in os.listdir(path):
                 if os.path.isdir(os.path.join(path, dir_name)):
                     unordered_classes.append(dir_name)
-
+            print(unordered_classes)
             for img_class in unordered_classes:
                 self.idx_to_class[data_gen.class_indices[img_class]] = img_class
                 self.class_to_idx[img_class] = int(data_gen.class_indices[img_class])
                 self.classes[int(data_gen.class_indices[img_class])] = img_class
 
-        return data_gen
-
+        return data_gen, train_data, test_data

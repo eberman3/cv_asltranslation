@@ -12,7 +12,7 @@ from datetime import datetime
 import tensorflow as tf
 
 import hyperparameters as hp
-from models import YourModel, VGGModel
+from models import ASLModel
 from preprocess import Datasets
 from skimage.transform import resize
 from tensorboard_utils import \
@@ -35,13 +35,9 @@ def parse_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         '--data',
-        default='..'+os.sep+'data'+os.sep,
+        #default='..'+os.sep+'data'+os.sep,
+        default = 'asl_dataset' + os.sep,
         help='Location where the dataset is stored.')
-    parser.add_argument(
-        '--load-vgg',
-        default='vgg16_imagenet.h5',
-        help='''Path to pre-trained VGG-16 file (only applicable to
-        task 3).''')
     parser.add_argument(
         '--load-checkpoint',
         default=None,
@@ -126,7 +122,7 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
             update_freq='batch',
             profile_batch=0),
         ImageLabelingLogger(logs_path, datasets),
-        CustomModelSaver(checkpoint_path, ARGS.task, hp.max_num_weights)
+        CustomModelSaver(checkpoint_path, 1, hp.max_num_weights)
     ]
 
     # Include confusion logger in callbacks if flag set
@@ -135,6 +131,11 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
 
     # Begin training
     print(init_epoch)
+
+    earlystop=EarlyStopping(patience=10)
+    learning_rate_reduce=ReduceLROnPlateau(monitor="val_acc",min_lr=0.001)
+    callback_list.append(earlystop)
+    callback_list.append(learning_rate_reduce)
     model.fit(
         x=datasets.train_data,
         validation_data=datasets.test_data,
@@ -177,45 +178,25 @@ def main():
     # set relative to the directory of run.py
     if os.path.exists(ARGS.data):
         ARGS.data = os.path.abspath(ARGS.data)
-    if os.path.exists(ARGS.load_vgg):
-        ARGS.load_vgg = os.path.abspath(ARGS.load_vgg)
 
     # Run script from location of run.py
     os.chdir(sys.path[0])
 
-    datasets = Datasets(ARGS.data, ARGS.task)
+    datasets = Datasets(ARGS.data, 1)
 
-    if ARGS.task == '1':
-        model = YourModel()
-        model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
-        checkpoint_path = "checkpoints" + os.sep + \
-            "your_model" + os.sep + timestamp + os.sep
-        logs_path = "logs" + os.sep + "your_model" + \
-            os.sep + timestamp + os.sep
+    model = ASLModel()
+    model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
+    checkpoint_path = "checkpoints" + os.sep + \
+        "your_model" + os.sep + timestamp + os.sep
+    logs_path = "logs" + os.sep + "your_model" + \
+        os.sep + timestamp + os.sep
 
-        # Print summary of model
-        model.summary()
-    else:
-        model = VGGModel()
-        checkpoint_path = "checkpoints" + os.sep + \
-            "vgg_model" + os.sep + timestamp + os.sep
-        logs_path = "logs" + os.sep + "vgg_model" + \
-            os.sep + timestamp + os.sep
-        model(tf.keras.Input(shape=(224, 224, 3)))
-
-        # Print summaries for both parts of the model
-        model.vgg16.summary()
-        model.head.summary()
-
-        # Load base of VGG model
-        model.vgg16.load_weights(ARGS.load_vgg, by_name=True)
+    # Print summary of model
+    model.summary()
 
     # Load checkpoints
     if ARGS.load_checkpoint is not None:
-        if ARGS.task == '1':
-            model.load_weights(ARGS.load_checkpoint, by_name=False)
-        else:
-            model.head.load_weights(ARGS.load_checkpoint, by_name=False)
+        model.load_weights(ARGS.load_checkpoint, by_name=False)
 
     # Make checkpoint directory if needed
     if not ARGS.evaluate and not os.path.exists(checkpoint_path):
@@ -226,6 +207,7 @@ def main():
         optimizer=model.optimizer,
         loss=model.loss_fn,
         metrics=["sparse_categorical_accuracy"])
+
 
     if ARGS.evaluate:
         test(model, datasets.test_data)

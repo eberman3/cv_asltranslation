@@ -19,9 +19,21 @@ class ASLModel(tf.keras.Model):
     def __init__(self):
         super(ASLModel, self).__init__()
 
-        self.optimizer = None #fix
+        self.optimizer = self.optimizer = tf.keras.optimizers.Adam(lr=hp.learning_rate) #fix
 
-        self.architecture = []
+        self.architecture = [
+            # Block 1
+            Conv2D(16,(3,3),activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
+            MaxPool2D(2,2),
+            Dropout(0.2),
+            Conv2D(32,(3,3),activation="relu"),
+            MaxPool2D(2,2),
+            Dropout(0.2),
+            Flatten(),
+            Dense(128,activation="relu"),
+            Dropout(0.2),
+            Dense(36,activation="softmax")
+        ]
 
     def call(self, x):
         """ Passes input image through the network. """
@@ -38,7 +50,7 @@ class ASLModel(tf.keras.Model):
         # TODO: Select a loss function for your network (see the documentation
         #       for tf.keras.losses)
 
-        loss_fn = None #fix
+        loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         return loss_fn(labels, predictions)
 
 

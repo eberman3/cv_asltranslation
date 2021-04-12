@@ -13,7 +13,7 @@ num_epochs = 30
 learning_rate = 1e-4
 
 
-img_size = 224
+img_size = 64
 
 """
 Sample size for calculating the mean and standard deviation of the
@@ -33,9 +33,9 @@ max_num_weights = 5
 Defines the number of training examples per batch.
 You don't need to modify this.
 """
-batch_size = 10
+batch_size = 32
 
 """
 The number of image scene classes. Don't change this.
 """
-num_classes = 26
+num_classes = 36
