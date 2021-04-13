@@ -217,7 +217,7 @@ class Datasets():
 
         train_data = data_gen.flow_from_directory(directory=path, target_size=(img_size, img_size),
                                                      class_mode="sparse", batch_size=hp.batch_size, classes=classes_for_flow, subset="training")
-        test_data = data_gen.flow_from_directory(directory=path, target_size=(img_size, img_size),
+        test_data = data_gen.flow_from_directory(directory=path + 'asl_dataset', target_size=(img_size, img_size),
                                                     class_mode="sparse", batch_size=hp.batch_size, classes=classes_for_flow, subset="validation")
 
         data_gen = train_data

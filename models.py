@@ -25,7 +25,7 @@ class ASLModel(tf.keras.Model):
             # Block 1
             Conv2D(16,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
             MaxPool2D(2,2),
-            Dropout(0.2),
+            Dropout(0.25),
             Conv2D(32,(3,3),padding="same",activation="relu"),
             Conv2D(32,(3,3),padding="same",activation="relu"),
             MaxPool2D(2,2),
@@ -35,8 +35,10 @@ class ASLModel(tf.keras.Model):
             Conv2D(128,(3,3),padding="same",activation="relu"),
             MaxPool2D(2,2),
             Dropout(0.5),
+            BatchNormalization(),
             Flatten(),
             Dense(128,activation="relu"),
+            Dropout(0.2),
             Dense(36,activation="relu"),
             Dense(hp.num_classes,activation="softmax")
         ]
