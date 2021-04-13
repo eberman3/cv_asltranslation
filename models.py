@@ -75,7 +75,7 @@ class ASLModel(tf.keras.Model):
         # TODO: Select a loss function for your network (see the documentation
         #       for tf.keras.losses)
 
-        loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+        loss_fn = tf.keras.losses.binary_crossentropy(from_logits=True)
         return loss_fn(labels, predictions)
 
 
