@@ -36,7 +36,7 @@ def parse_args():
     parser.add_argument(
         '--data',
         #default='..'+os.sep+'data'+os.sep,
-        default = 'asl_dataset' + os.sep + 'asl_dataset' + os.sep,
+        default = 'asl_dataset' + os.sep + 'asl_dataset' + op.sep,
         help='Location where the dataset is stored.')
     parser.add_argument(
         '--load-checkpoint',
