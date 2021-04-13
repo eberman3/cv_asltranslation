@@ -19,29 +19,45 @@ class ASLModel(tf.keras.Model):
     def __init__(self):
         super(ASLModel, self).__init__()
 
-        self.optimizer = self.optimizer = tf.keras.optimizers.Adam(lr=hp.learning_rate) #fix
+        self.optimizer = self.optimizer = tf.keras.optimizers.Adam(lr=hp.learning_rate) 
+
+        # self.architecture = [
+        #     # Block 1
+        #     Conv2D(16,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
+        #     MaxPool2D(2,2),
+        #     Dropout(0.25),
+        #     Conv2D(32,(3,3),padding="same",activation="relu"),
+        #     Conv2D(32,(3,3),padding="same",activation="relu"),
+        #     MaxPool2D(2,2),
+        #     Dropout(0.2),
+        #     Conv2D(64,(3,3),padding="same",activation="relu"),
+        #     Conv2D(64,(3,3),padding="same",activation="relu"),
+        #     MaxPool2D(3,3),
+        #     Conv2D(128,(3,3),padding="same",activation="relu"),
+        #     MaxPool2D(2,2),
+        #     Dropout(0.2),
+        #     BatchNormalization(),
+        #     Flatten(),
+        #     Dense(128,activation="relu"),
+        #     Dropout(0.2),
+        #     Dense(64,activation="relu"),
+        #     Dense(hp.num_classes,activation="softmax")
+        # ]
 
         self.architecture = [
-            # Block 1
-            Conv2D(16,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
+            Conv2D(16,(3,3),activation='relu',input_shape=(hp.img_size, hp.img_size, 3)),
             MaxPool2D(2,2),
             Dropout(0.25),
-            Conv2D(32,(3,3),padding="same",activation="relu"),
-            Conv2D(32,(3,3),padding="same",activation="relu"),
+            Conv2D(64,(3,3),activation='relu'),
             MaxPool2D(2,2),
-            Dropout(0.2),
-            Conv2D(64,(3,3),padding="same",activation="relu"),
-            Conv2D(64,(3,3),padding="same",activation="relu"),
-            MaxPool2D(3,3),
-            Conv2D(128,(3,3),padding="same",activation="relu"),
+            Dropout(0.25),
+            Conv2D(64,(3,3),activation='relu'),
             MaxPool2D(2,2),
-            Dropout(0.2),
-            BatchNormalization(),
+            Dropout(0.25),
             Flatten(),
-            Dense(128,activation="relu"),
-            Dropout(0.2),
-            Dense(64,activation="relu"),
-            Dense(hp.num_classes,activation="softmax")
+            Dense(64,activation='relu'),
+            Dropout(0.25),
+            Dense(1,activation="sigmoid")
         ]
 
     def call(self, x):
