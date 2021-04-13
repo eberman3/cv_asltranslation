@@ -19,7 +19,7 @@ class ASLModel(tf.keras.Model):
     def __init__(self):
         super(ASLModel, self).__init__()
 
-        self.optimizer = self.optimizer = tf.keras.optimizers.Adam(lr=hp.learning_rate) 
+        self.optimizer = self.optimizer = tf.keras.optimizers.Adam(lr=hp.learning_rate) #fix
 
         self.architecture = [
             # Block 1
@@ -59,7 +59,7 @@ class ASLModel(tf.keras.Model):
         # TODO: Select a loss function for your network (see the documentation
         #       for tf.keras.losses)
 
-        loss_fn = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
+        loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         return loss_fn(labels, predictions)
 
 
