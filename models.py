@@ -21,43 +21,27 @@ class ASLModel(tf.keras.Model):
 
         self.optimizer = self.optimizer = tf.keras.optimizers.Adam(lr=hp.learning_rate) 
 
-        # self.architecture = [
-        #     # Block 1
-        #     Conv2D(16,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
-        #     MaxPool2D(2,2),
-        #     Dropout(0.25),
-        #     Conv2D(32,(3,3),padding="same",activation="relu"),
-        #     Conv2D(32,(3,3),padding="same",activation="relu"),
-        #     MaxPool2D(2,2),
-        #     Dropout(0.2),
-        #     Conv2D(64,(3,3),padding="same",activation="relu"),
-        #     Conv2D(64,(3,3),padding="same",activation="relu"),
-        #     MaxPool2D(3,3),
-        #     Conv2D(128,(3,3),padding="same",activation="relu"),
-        #     MaxPool2D(2,2),
-        #     Dropout(0.2),
-        #     BatchNormalization(),
-        #     Flatten(),
-        #     Dense(128,activation="relu"),
-        #     Dropout(0.2),
-        #     Dense(64,activation="relu"),
-        #     Dense(hp.num_classes,activation="softmax")
-        # ]
-
         self.architecture = [
-            Conv2D(16,(3,3),activation='relu',input_shape=(hp.img_size, hp.img_size, 3)),
+            # Block 1
+            Conv2D(16,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
             MaxPool2D(2,2),
             Dropout(0.25),
-            Conv2D(64,(3,3),activation='relu'),
+            Conv2D(32,(3,3),padding="same",activation="relu"),
+            Conv2D(32,(3,3),padding="same",activation="relu"),
             MaxPool2D(2,2),
-            Dropout(0.25),
-            Conv2D(64,(3,3),activation='relu'),
+            Dropout(0.2),
+            Conv2D(64,(3,3),padding="same",activation="relu"),
+            Conv2D(64,(3,3),padding="same",activation="relu"),
+            MaxPool2D(3,3),
+            Conv2D(128,(3,3),padding="same",activation="relu"),
             MaxPool2D(2,2),
-            Dropout(0.25),
+            Dropout(0.2),
+            BatchNormalization(),
             Flatten(),
-            Dense(64,activation='relu'),
-            Dropout(0.25),
-            Dense(1,activation="sigmoid")
+            Dense(128,activation="relu"),
+            Dropout(0.2),
+            Dense(64,activation="relu"),
+            Dense(hp.num_classes,activation="softmax")
         ]
 
     def call(self, x):
@@ -75,7 +59,7 @@ class ASLModel(tf.keras.Model):
         # TODO: Select a loss function for your network (see the documentation
         #       for tf.keras.losses)
 
-        loss_fn = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+        loss_fn = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
         return loss_fn(labels, predictions)
 
 
