@@ -7,7 +7,7 @@ Brown University
 """
 Number of epochs. 
 """
-num_epochs = 30
+num_epochs = 40
 
 
 learning_rate = 1e-4
