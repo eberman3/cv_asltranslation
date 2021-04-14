@@ -47,28 +47,24 @@ class ASLModel(tf.keras.Model):
         self.architecture = [
             Conv2D(64,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
             Conv2D(64,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
-            BatchNormalization(),
             MaxPool2D(3,3),
             Conv2D(128,(5,5),padding="same",activation="relu"),
             Conv2D(128,(5,5),padding="same",activation="relu"),
-            BatchNormalization(),
             MaxPool2D(3,3),
             
             Conv2D(256,(3,3),padding="same",activation="relu"),
             Conv2D(256,(5,5),padding="same",activation="relu"),
             Conv2D(256,(5,5),padding="same",activation="relu"),
-            BatchNormalization(),
             MaxPool2D(3,3),
             Conv2D(512,(3,3),padding="same",activation="relu"),
             Conv2D(512,(3,3),padding="same",activation="relu"),
-            BatchNormalization(),
             MaxPool2D(2,2),
-            Dropout(0.2),
+            Dropout(0.5),
             Flatten(),
-            Dropout(0.4),
+            Dropout(0.2),
             BatchNormalization(),
-            Dense(512,activation="relu"),
-            Dense(256,activation="relu"),
+            Dense(4096,activation="relu"),
+            Dense(1024,activation="relu"),
             Dense(hp.num_classes,activation="softmax")
         ]
 
