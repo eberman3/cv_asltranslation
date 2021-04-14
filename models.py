@@ -107,22 +107,22 @@ class ASLModel(tf.keras.Model):
 
     def call(self, x):
         """ Passes input image through the network. """
-        user_input = input("Enter architecure: (architecture, alexnet, vgg, lenet5)> ")
+        # user_input = input("Enter architecure: (architecture, alexnet, vgg, lenet5)> ")
        
-        if user_input == "alexnet":
-            arch = self.alexnet
-        elif user_input == "vgg":
-            arch = self.vgg
-        elif user_input == "lenet5":
-            arch = self.lenet5
-        else:
-            arch = self.architecture
+        # if user_input == "alexnet":
+        #     arch = self.alexnet
+        # elif user_input == "vgg":
+        #     arch = self.vgg
+        # elif user_input == "lenet5":
+        #     arch = self.lenet5
+        # else:
+        #     arch = self.architecture
 
-        for layer in arch:
-            x = layer(x)
-
-        # for layer in self.architecture:
+        # for layer in arch:
         #     x = layer(x)
+
+        for layer in self.architecture:
+            x = layer(x)
 
         return x
 
