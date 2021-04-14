@@ -52,7 +52,7 @@ class ASLModel(tf.keras.Model):
             Conv2D(128,(5,5),padding="same",activation="relu"),
             MaxPool2D(3,3),
             
-            #Conv2D(256,(3,3),padding="same",activation="relu"),
+            Conv2D(256,(3,3),padding="same",activation="relu"),
             Conv2D(256,(5,5),padding="same",activation="relu"),
             Conv2D(256,(5,5),padding="same",activation="relu"),
             MaxPool2D(3,3),
