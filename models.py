@@ -64,7 +64,7 @@ class ASLModel(tf.keras.Model):
             Dropout(0.4),
             BatchNormalization(),
             Dense(1024,activation="relu"),
-            Dense(128,activation="relu"),
+            Dense(512,activation="relu"),
             Dense(hp.num_classes,activation="softmax")
         ]
 
