@@ -66,7 +66,7 @@ class ASLModel(tf.keras.Model):
             Dense(hp.num_classes, activation='softmax')
         ]
 
-        self.vgg = [
+        self.architecture = [
             Conv2D(input_shape=(hp.img_size,hp.img_size,3),filters=64,kernel_size=(3,3),padding="same", activation="relu"),
             Conv2D(filters=64,kernel_size=(3,3),padding="same", activation="relu"),
             MaxPool2D(pool_size=(2,2),strides=(2,2)),
