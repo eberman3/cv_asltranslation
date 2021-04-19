@@ -28,14 +28,13 @@ def session(model):
     std = 0.229 * 225.
 
     ort_session = ort.InferenceSession(output_model_path)
-
     cap = cv2.VideoCapture(0)
     while True:
         ret, frame = cap.read()
 
         frame = center_crop(frame)
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-        x = cv2.resize(frame, (28, 28))
+        frame = cv2.resize(frame, (28, 28))
         x = (frame - mean) / std
 
         x = x.reshape(1, 1, 28, 28).astype(np.float32)
