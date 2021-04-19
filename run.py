@@ -11,7 +11,7 @@ import re
 from datetime import datetime
 import tensorflow as tf
 
-from camera import session
+# from camera import session
 import hyperparameters as hp
 from models import ASLModel
 from preprocess import Datasets
@@ -212,7 +212,7 @@ def main():
 
     if ARGS.evaluate:
         test(model, datasets.test_data)
-        session(model)
+        # session(model)
 
         # TODO: change the image path to be the image of your choice by changing
         # the lime-image flag when calling run.py to investigate
