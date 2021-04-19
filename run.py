@@ -197,7 +197,8 @@ def main():
 
     # Load checkpoints
     if ARGS.load_checkpoint is not None:
-        model.load_weights(ARGS.load_checkpoint, by_name=False)
+        # model.load_weights(ARGS.load_checkpoint, by_name=False)
+        model = tf.keras.models.load_model('asl_model.h5')
 
     # Make checkpoint directory if needed
     if not ARGS.evaluate and not os.path.exists(checkpoint_path):
@@ -221,6 +222,7 @@ def main():
         # LIME_explainer(model, path, datasets.preprocess_fn)
     else:
         train(model, datasets, checkpoint_path, logs_path, init_epoch)
+        model.save('asl_model.h5')
 
 
 # Make arguments global
