@@ -33,12 +33,13 @@ def session(model):
         ret, frame = cap.read()
 
         frame = center_crop(frame)
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-        frame = cv2.resize(frame, (28, 28))
-        x = (frame - mean) / std
+        #frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+        x = cv2.resize(frame, (64, 64))
+        x = (x - mean) / std
 
-        x = x.reshape(1, 1, 28, 28).astype(np.float32)
-        y = ort_session.run(None, {'input': x})[0]
+        x = x.reshape(1, 64, 64, 3).astype(np.float32)
+        input_name = ort_session.get_inputs()[0].name
+        y = ort_session.run(None, {input_name: x})[0]
 
         index = np.argmax(y, axis=1)
         letter = index_to_letter[int(index)]
