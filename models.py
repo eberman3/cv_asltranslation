@@ -21,44 +21,30 @@ class ASLModel(tf.keras.Model):
 
         self.optimizer = self.optimizer = tf.keras.optimizers.Adam(lr=hp.learning_rate) 
 
-        self.architecture = tf.keras.Sequential()
-        self.architecture.add(Conv2D(16,(3,3),activation="relu",input_shape=(hp.img_size, hp.img_size, 3)))
-        self.architecture.add(MaxPool2D(2,2))
-        self.architecture.add(Dropout(0.2))
-        self.architecture.add(Conv2D(32,(3,3),activation="relu"))
-        self.architecture.add(MaxPool2D(2,2))
-        self.architecture.add(Dropout(0.2))
-        self.architecture.add(Conv2D(64,(3,3),activation="relu"))
-        self.architecture.add(MaxPool2D(2,2))
-        self.architecture.add(Dropout(0.2))
-        self.architecture.add(Flatten())
-        self.architecture.add(Dense(128,activation="relu"))
-        self.architecture.add(Dropout(0.2))
-        self.architecture.add(Dense(36,activation="softmax"))
 
-        # self.architecture = [
-        #     Conv2D(64,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
-        #     Conv2D(64,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
-        #     MaxPool2D(3,3),
-        #     Conv2D(128,(5,5),padding="same",activation="relu"),
-        #     Conv2D(128,(5,5),padding="same",activation="relu"),
-        #     MaxPool2D(3,3),
-        #     Conv2D(256,(5,5),padding="same",activation="relu"),
-        #     Conv2D(256,(5,5),padding="same",activation="relu"),
-        #     MaxPool2D(3,3),
-        #     Conv2D(512,(3,3),padding="same",activation="relu"),
-        #     Conv2D(512,(3,3),padding="same",activation="relu"),
-        #     MaxPool2D(2,2),
-        #     BatchNormalization(),
-        #     Dropout(0.2),
-        #     Flatten(),
-        #     Dropout(0.4),
-        #     BatchNormalization(),
-        #     Dense(1024,activation="relu"),
-        #     Dense(512,activation="relu"),
-        #     Dense(hp.num_classes,activation="softmax")
+        self.architecture = [
+            Conv2D(64,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
+            Conv2D(64,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
+            MaxPool2D(3,3),
+            Conv2D(128,(5,5),padding="same",activation="relu"),
+            Conv2D(128,(5,5),padding="same",activation="relu"),
+            MaxPool2D(3,3),
+            Conv2D(256,(5,5),padding="same",activation="relu"),
+            Conv2D(256,(5,5),padding="same",activation="relu"),
+            MaxPool2D(3,3),
+            Conv2D(512,(3,3),padding="same",activation="relu"),
+            Conv2D(512,(3,3),padding="same",activation="relu"),
+            MaxPool2D(2,2),
+            BatchNormalization(),
+            Dropout(0.2),
+            Flatten(),
+            Dropout(0.4),
+            BatchNormalization(),
+            Dense(1024,activation="relu"),
+            Dense(512,activation="relu"),
+            Dense(hp.num_classes,activation="softmax")
             
-        # ]
+        ]
 
         # self.alexnet =  [
         #     Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(hp.img_size,hp.img_size,3)),
