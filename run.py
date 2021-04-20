@@ -10,9 +10,16 @@ import argparse
 import re
 from datetime import datetime
 import tensorflow as tf
-from tensorflow.keras import preprocessing
-from tensorflow.keras.models import model_from_json
+from keras.models import Sequential
 
+from tensorflow.keras import preprocessing
+from tensorflow.keras.layers import \
+    Conv2D, MaxPool2D, Dropout, Flatten, Dense, BatchNormalization, AveragePooling2D
+from tensorflow.keras import models
+from sklearn.model_selection import train_test_split
+import keras
+import hyperparameters as hp
+from keras import regularizers
 #from camera import session
 import hyperparameters as hp
 from models import ASLModel
@@ -29,6 +36,9 @@ import numpy as np
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+labels_dict = {'A':0,'B':1,'C':2,'D':3,'E':4,'F':5,'G':6,'H':7,'I':8,'J':9,'K':10,'L':11,'M':12,
+                   'N':13,'O':14,'P':15,'Q':16,'R':17,'S':18,'T':19,'U':20,'V':21,'W':22,'X':23,'Y':24,
+                   'Z':25,'space':26,'del':27,'nothing':28}
 
 def parse_args():
     """ Perform command-line argument parsing. """
@@ -218,8 +228,7 @@ def main():
         #test(model, datasets.test_data)
         #session(model)
 
-        model.load_weights("checkpoints/your_model/042021-013736/your.weights.e037-acc0.9066.h5")
-        print("Loaded model from disk")
+        model = create_model()
 
         img = preprocessing.image.load_img("asl_dataset/asl_dataset/a/hand1_a_bot_seg_1_cropped.jpeg", target_size=(64, 64))
         x = preprocessing.image.img_to_array(img)
@@ -240,6 +249,37 @@ def main():
         # LIME_explainer(model, path, datasets.preprocess_fn)
     else:
         train(model, datasets, checkpoint_path, logs_path, init_epoch)
+
+def create_model():
+    
+    model = Sequential()
+    
+    model.add(Conv2D(16, kernel_size = [3,3], padding = 'same', activation = 'relu', input_shape = (64,64,3)))
+    model.add(Conv2D(32, kernel_size = [3,3], padding = 'same', activation = 'relu'))
+    model.add(MaxPool2D(pool_size = [3,3]))
+    
+    model.add(Conv2D(32, kernel_size = [3,3], padding = 'same', activation = 'relu'))
+    model.add(Conv2D(64, kernel_size = [3,3], padding = 'same', activation = 'relu'))
+    model.add(MaxPool2D(pool_size = [3,3]))
+    
+    model.add(Conv2D(128, kernel_size = [3,3], padding = 'same', activation = 'relu'))
+    model.add(Conv2D(256, kernel_size = [3,3], padding = 'same', activation = 'relu'))
+    model.add(MaxPool2D(pool_size = [3,3]))
+    
+    model.add(BatchNormalization())
+    
+    model.add(Flatten())
+    model.add(Dropout(0.5))
+    model.add(Dense(512, activation = 'relu', kernel_regularizer = regularizers.l2(0.001)))
+    model.add(Dense(29, activation = 'softmax'))
+    
+    model.compile(optimizer = 'adam', loss = keras.losses.categorical_crossentropy, metrics = ["accuracy"])
+    
+    print("MODEL CREATED")
+    model.summary()
+    
+    return model
+
 
 
 # Make arguments global
