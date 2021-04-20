@@ -11,6 +11,7 @@ import re
 from datetime import datetime
 import tensorflow as tf
 from tensorflow.keras import preprocessing
+from tensorflow.keras.models import model_from_json
 
 #from camera import session
 import hyperparameters as hp
@@ -147,6 +148,10 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
         initial_epoch=init_epoch,
     )
 
+    model_json = model.to_json()
+    with open("model.json", "w") as json_file:
+        json_file.write(model_json)
+
 
 def test(model, test_data):
     """ Testing routine. """
@@ -214,9 +219,14 @@ def main():
     if ARGS.evaluate:
         #test(model, datasets.test_data)
         #session(model)
-        model = ASLModel()
-        model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
-        model = model.load_weights("checkpoints/your_model/042021-013736/your.weights.e037-acc0.9066.h5")
+
+        json_file = open('model.json', 'r')
+        loaded_model_json = json_file.read()
+        json_file.close()
+        loaded_model = model_from_json(loaded_model_json)
+        # load weights into new model
+        loaded_model.load_weights("checkpoints/your_model/042021-013736/your.weights.e037-acc0.9066.h5")
+        print("Loaded model from disk")
 
         img = preprocessing.image.load_img("asl_dataset/asl_dataset/a/hand1_a_bot_seg_1_cropped.jpeg", target_size=(64, 64))
         x = preprocessing.image.img_to_array(img)
