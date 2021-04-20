@@ -195,23 +195,23 @@ def main():
 
     datasets = Datasets(ARGS.data, 1)
 
-    model = ASLModel()
-    model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
-    checkpoint_path = "checkpoints" + os.sep + \
-        "your_model" + os.sep + timestamp + os.sep
-    logs_path = "logs" + os.sep + "your_model" + \
-        os.sep + timestamp + os.sep
+    # model = ASLModel()
+    # model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
+    # checkpoint_path = "checkpoints" + os.sep + \
+    #     "your_model" + os.sep + timestamp + os.sep
+    # logs_path = "logs" + os.sep + "your_model" + \
+    #     os.sep + timestamp + os.sep
 
-    # Print summary of model
-    model.summary()
+    # # Print summary of model
+    # model.summary()
 
-    # Load checkpoints
-    if ARGS.load_checkpoint is not None:
-        model.load_weights(ARGS.load_checkpoint, by_name=False)
+    # # Load checkpoints
+    # if ARGS.load_checkpoint is not None:
+    #     model.load_weights(ARGS.load_checkpoint, by_name=False)
 
-    # Make checkpoint directory if needed
-    if not ARGS.evaluate and not os.path.exists(checkpoint_path):
-        os.makedirs(checkpoint_path)
+    # # Make checkpoint directory if needed
+    # if not ARGS.evaluate and not os.path.exists(checkpoint_path):
+    #     os.makedirs(checkpoint_path)
 
     model = create_model()
 
@@ -222,12 +222,9 @@ def main():
     #     metrics=["sparse_categorical_accuracy"])
 
     
-
     if ARGS.evaluate:
         #test(model, datasets.test_data)
         #session(model)
-
-
 
         img = preprocessing.image.load_img("asl_dataset/asl_dataset/a/hand1_a_bot_seg_1_cropped.jpeg", target_size=(64, 64))
         x = preprocessing.image.img_to_array(img)
