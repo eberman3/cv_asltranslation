@@ -215,6 +215,7 @@ def main():
         #test(model, datasets.test_data)
         #session(model)
         model = ASLModel()
+        model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
         model = model.load_weights("checkpoints/your_model/042021-013736/your.weights.e037-acc0.9066.h5")
 
         img = preprocessing.image.load_img("asl_dataset/asl_dataset/a/hand1_a_bot_seg_1_cropped.jpeg", target_size=(64, 64))
