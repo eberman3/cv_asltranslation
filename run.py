@@ -215,12 +215,12 @@ def main():
         os.makedirs(checkpoint_path)
 
     model = create_model()
-    
+
     # Compile model graph
-    model.compile(
-        optimizer=model.optimizer,
-        loss=model.loss_fn,
-        metrics=["sparse_categorical_accuracy"])
+    # model.compile(
+    #     optimizer=model.optimizer,
+    #     loss=model.loss_fn,
+    #     metrics=["sparse_categorical_accuracy"])
 
     
 
