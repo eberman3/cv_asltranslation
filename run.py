@@ -195,16 +195,18 @@ def main():
 
     datasets = Datasets(ARGS.data, 1)
 
+    model = create_model()
+
     # model = ASLModel()
     # model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
-    # checkpoint_path = "checkpoints" + os.sep + \
-    #     "your_model" + os.sep + timestamp + os.sep
-    # logs_path = "logs" + os.sep + "your_model" + \
-    #     os.sep + timestamp + os.sep
+    checkpoint_path = "checkpoints" + os.sep + \
+        "your_model" + os.sep + timestamp + os.sep
+    logs_path = "logs" + os.sep + "your_model" + \
+        os.sep + timestamp + os.sep
 
     # # Print summary of model
-    # model.summary()
-    model = create_model()
+    model.summary()
+    
     # Load checkpoints
     if ARGS.load_checkpoint is not None:
         model.load_weights(ARGS.load_checkpoint, by_name=False)
