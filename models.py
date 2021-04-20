@@ -42,6 +42,7 @@ class ASLModel(tf.keras.Model):
             Dense(1024,activation="relu"),
             Dense(512,activation="relu"),
             Dense(hp.num_classes,activation="softmax")
+            
         ]
 
         # self.alexnet =  [

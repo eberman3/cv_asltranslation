@@ -10,8 +10,9 @@ import argparse
 import re
 from datetime import datetime
 import tensorflow as tf
+from tensorflow.keras import preprocessing
 
-#from camera import session
+from camera import session
 import hyperparameters as hp
 from models import ASLModel
 from preprocess import Datasets
@@ -211,8 +212,20 @@ def main():
 
 
     if ARGS.evaluate:
-        test(model, datasets.test_data)
-        session(model)
+        #test(model, datasets.test_data)
+        #session(model)
+
+        img = preprocessing.image.load_img("asl_dataset/asl_dataset/a/hand1_a_bot_seg_1_cropped.jpeg", target_size=(64, 64))
+        x = preprocessing.image.img_to_array(img)
+        x = np.expand_dims(x, axis=0)   
+
+        image = np.vstack([x])
+        classes = model.predict(image, batch_size=hp.batch_size)
+        index = np.argmax(classes,axis=1)
+ 
+
+        print(classes) #displaying matrix prediction position
+        print(index)
 
         # TODO: change the image path to be the image of your choice by changing
         # the lime-image flag when calling run.py to investigate
