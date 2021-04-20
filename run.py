@@ -11,7 +11,7 @@ import re
 from datetime import datetime
 import tensorflow as tf
 
-from camera import session
+#from camera import session
 import hyperparameters as hp
 from models import ASLModel
 from preprocess import Datasets
