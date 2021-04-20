@@ -12,7 +12,7 @@ from datetime import datetime
 import tensorflow as tf
 from tensorflow.keras import preprocessing
 
-from camera import session
+#from camera import session
 import hyperparameters as hp
 from models import ASLModel
 from preprocess import Datasets
@@ -215,7 +215,7 @@ def main():
         #test(model, datasets.test_data)
         #session(model)
 
-        model = tf.keras.models.load_model("your.weights.e037-acc0.9066.h5.h5")
+        model = tf.keras.models.load_model("your.weights.e037-acc0.9066.h5")
 
         img = preprocessing.image.load_img("asl_dataset/asl_dataset/a/hand1_a_bot_seg_1_cropped.jpeg", target_size=(64, 64))
         x = preprocessing.image.img_to_array(img)
