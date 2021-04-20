@@ -221,7 +221,7 @@ def main():
         metrics=["sparse_categorical_accuracy"])
 
     model = create_model()
-    
+
     if ARGS.evaluate:
         #test(model, datasets.test_data)
         #session(model)
@@ -269,7 +269,7 @@ def create_model():
     model.add(Flatten())
     model.add(Dropout(0.5))
     model.add(Dense(512, activation = 'relu', kernel_regularizer = regularizers.l2(0.001)))
-    model.add(Dense(29, activation = 'softmax'))
+    model.add(Dense(hp.num_classes, activation = 'softmax'))
     
     model.compile(optimizer = 'adam', loss = keras.losses.categorical_crossentropy, metrics = ["accuracy"])
     
