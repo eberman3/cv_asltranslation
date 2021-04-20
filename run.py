@@ -214,13 +214,15 @@ def main():
     if not ARGS.evaluate and not os.path.exists(checkpoint_path):
         os.makedirs(checkpoint_path)
 
+    model = create_model()
+    
     # Compile model graph
     model.compile(
         optimizer=model.optimizer,
         loss=model.loss_fn,
         metrics=["sparse_categorical_accuracy"])
 
-    model = create_model()
+    
 
     if ARGS.evaluate:
         #test(model, datasets.test_data)
@@ -277,7 +279,6 @@ def create_model():
     model.summary()
     
     return model
-
 
 
 # Make arguments global
