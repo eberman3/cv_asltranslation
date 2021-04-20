@@ -148,10 +148,6 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
         initial_epoch=init_epoch,
     )
 
-    model_json = model.to_json()
-    with open("model.json", "w") as json_file:
-        json_file.write(model_json)
-
 
 def test(model, test_data):
     """ Testing routine. """
@@ -220,12 +216,7 @@ def main():
         #test(model, datasets.test_data)
         #session(model)
 
-        json_file = open('model.json', 'r')
-        loaded_model_json = json_file.read()
-        json_file.close()
-        loaded_model = model_from_json(loaded_model_json)
-        # load weights into new model
-        loaded_model.load_weights("checkpoints/your_model/042021-013736/your.weights.e037-acc0.9066.h5")
+        model.load_weights("checkpoints/your_model/042021-013736/your.weights.e037-acc0.9066.h5")
         print("Loaded model from disk")
 
         img = preprocessing.image.load_img("asl_dataset/asl_dataset/a/hand1_a_bot_seg_1_cropped.jpeg", target_size=(64, 64))
