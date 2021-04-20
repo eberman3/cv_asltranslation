@@ -154,7 +154,7 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
     #     callbacks=callback_list,
     #     initial_epoch=init_epoch,
     # )
-    model_hist = model.fit(datasets.train_data, datasets.test_data, batch_size = 64, epochs = 6)
+    model.fit(x=datasets.train_data, validation_data=datasets.test_data, batch_size = None, epochs = 6)
 
 
 def test(model, test_data):
