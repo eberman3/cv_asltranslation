@@ -142,10 +142,10 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
     # Begin training
     print(init_epoch)
 
-    earlystop=tf.keras.callbacks.EarlyStopping(patience=10)
-    learning_rate_reduce=tf.keras.callbacks.ReduceLROnPlateau(monitor="val_sparse_categorical_accuracy",min_lr=0.001)
-    callback_list.append(earlystop)
-    callback_list.append(learning_rate_reduce)
+    # earlystop=tf.keras.callbacks.EarlyStopping(patience=10)
+    # learning_rate_reduce=tf.keras.callbacks.ReduceLROnPlateau(monitor="val_sparse_categorical_accuracy",min_lr=0.001)
+    # callback_list.append(earlystop)
+    # callback_list.append(learning_rate_reduce)
     model.fit(
         x=datasets.train_data,
         validation_data=datasets.test_data,
@@ -154,8 +154,6 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
         callbacks=callback_list,
         initial_epoch=init_epoch,
     )
-
-    model.save("model_dl.h5")
 
 
 def test(model, test_data):
