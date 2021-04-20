@@ -36,9 +36,6 @@ import numpy as np
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-labels_dict = {'A':0,'B':1,'C':2,'D':3,'E':4,'F':5,'G':6,'H':7,'I':8,'J':9,'K':10,'L':11,'M':12,
-                   'N':13,'O':14,'P':15,'Q':16,'R':17,'S':18,'T':19,'U':20,'V':21,'W':22,'X':23,'Y':24,
-                   'Z':25,'space':26,'del':27,'nothing':28}
 
 def parse_args():
     """ Perform command-line argument parsing. """
@@ -223,12 +220,13 @@ def main():
         loss=model.loss_fn,
         metrics=["sparse_categorical_accuracy"])
 
-
+    model = create_model()
+    
     if ARGS.evaluate:
         #test(model, datasets.test_data)
         #session(model)
 
-        model = create_model()
+
 
         img = preprocessing.image.load_img("asl_dataset/asl_dataset/a/hand1_a_bot_seg_1_cropped.jpeg", target_size=(64, 64))
         x = preprocessing.image.img_to_array(img)
