@@ -11,6 +11,7 @@ import re
 from datetime import datetime
 import tensorflow as tf
 
+from camera import session
 import hyperparameters as hp
 from models import ASLModel
 from preprocess import Datasets
@@ -122,7 +123,7 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
             update_freq='batch',
             profile_batch=0),
         ImageLabelingLogger(logs_path, datasets),
-        CustomModelSaver(checkpoint_path, 1, hp.max_num_weights)
+        CustomModelSaver(checkpoint_path, '1', hp.max_num_weights)
     ]
 
     # Include confusion logger in callbacks if flag set
@@ -211,12 +212,13 @@ def main():
 
     if ARGS.evaluate:
         test(model, datasets.test_data)
+        session(model)
 
         # TODO: change the image path to be the image of your choice by changing
         # the lime-image flag when calling run.py to investigate
         # i.e. python run.py --evaluate --lime-image test/Bedroom/image_003.jpg
-        path = ARGS.data + os.sep + ARGS.lime_image
-        LIME_explainer(model, path, datasets.preprocess_fn)
+        # path = ARGS.data + os.sep + ARGS.lime_image
+        # LIME_explainer(model, path, datasets.preprocess_fn)
     else:
         train(model, datasets, checkpoint_path, logs_path, init_epoch)
 
