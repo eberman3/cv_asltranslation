@@ -146,14 +146,15 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
     # learning_rate_reduce=tf.keras.callbacks.ReduceLROnPlateau(monitor="val_sparse_categorical_accuracy",min_lr=0.001)
     # callback_list.append(earlystop)
     # callback_list.append(learning_rate_reduce)
-    model.fit(
-        x=datasets.train_data,
-        validation_data=datasets.test_data,
-        epochs=hp.num_epochs,
-        batch_size=None,
-        callbacks=callback_list,
-        initial_epoch=init_epoch,
-    )
+    # model.fit(
+    #     x=datasets.train_data,
+    #     validation_data=datasets.test_data,
+    #     epochs=hp.num_epochs,
+    #     batch_size=None,
+    #     callbacks=callback_list,
+    #     initial_epoch=init_epoch,
+    # )
+    model_hist = model.fit(datasets.train_data, datasets.test_data, batch_size = 64, epochs = 6, validation_split = 0.1)
 
 
 def test(model, test_data):
