@@ -148,6 +148,8 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
         initial_epoch=init_epoch,
     )
 
+    model.save("model_dl.h5")
+
 
 def test(model, test_data):
     """ Testing routine. """
@@ -224,7 +226,7 @@ def main():
         x = np.expand_dims(x, axis=0)   
 
         image = np.vstack([x])
-        classes = model.predict(image, batch_size=hp.batch_size)
+        classes = model.predict(x, batch_size=hp.batch_size)
         index = np.argmax(classes,axis=1)
  
 
