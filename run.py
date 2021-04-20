@@ -204,16 +204,15 @@ def main():
 
     # # Print summary of model
     # model.summary()
-
-    # # Load checkpoints
-    # if ARGS.load_checkpoint is not None:
-    #     model.load_weights(ARGS.load_checkpoint, by_name=False)
-
-    # # Make checkpoint directory if needed
-    # if not ARGS.evaluate and not os.path.exists(checkpoint_path):
-    #     os.makedirs(checkpoint_path)
-
     model = create_model()
+    # Load checkpoints
+    if ARGS.load_checkpoint is not None:
+        model.load_weights(ARGS.load_checkpoint, by_name=False)
+
+    # Make checkpoint directory if needed
+    if not ARGS.evaluate and not os.path.exists(checkpoint_path):
+        os.makedirs(checkpoint_path)
+
 
     # Compile model graph
     # model.compile(
