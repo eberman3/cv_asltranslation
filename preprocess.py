@@ -63,7 +63,7 @@ class Datasets():
         file_list = file_list[:hp.preprocess_sample_size]
 
         # Allocate space in memory for images
-                img_size = 64
+        img_size = 64
         if self.architecture == 'ASL':
             img_size = 64
         elif self.architecture == 'VGG':
