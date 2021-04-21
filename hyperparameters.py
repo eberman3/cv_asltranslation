@@ -13,7 +13,7 @@ num_epochs = 50
 learning_rate = 1e-4
 
 
-img_size = 64
+img_size = 256
 
 """
 Sample size for calculating the mean and standard deviation of the
