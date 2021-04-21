@@ -1,5 +1,5 @@
 """
-Project 4 - CNNs
+Project 6 - Loss in Translation
 CS1430 - Computer Vision
 Brown University
 """
@@ -75,7 +75,6 @@ class Datasets():
 
         data_sample = np.zeros(
             (hp.preprocess_sample_size, img_size, img_size, 3))
-        print(data_sample.size)
 
 
         # Import images
@@ -192,7 +191,6 @@ class Datasets():
             for dir_name in os.listdir(path):
                 if os.path.isdir(os.path.join(path, dir_name)):
                     unordered_classes.append(dir_name)
-            print(unordered_classes)
             for img_class in unordered_classes:
                 self.idx_to_class[data_gen.class_indices[img_class]] = img_class
                 self.class_to_idx[img_class] = int(data_gen.class_indices[img_class])

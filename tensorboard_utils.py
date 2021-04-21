@@ -1,5 +1,5 @@
 """
-Project 4 - CNNs
+Project 6 - Loss in Translation
 CS1430 - Computer Vision
 Brown University
 """
