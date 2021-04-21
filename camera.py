@@ -38,7 +38,6 @@ def session(model, datasets):
 
         x = datasets.preprocess_fn(frame)
         x = resize(x, (64, 64, 3))
-        x = x / 255
         x = np.expand_dims(x, axis=0)
 
         classes = model.predict(x, batch_size=1)
