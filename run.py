@@ -142,10 +142,10 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
     # Begin training
     print(init_epoch)
 
-    # earlystop=tf.keras.callbacks.EarlyStopping(patience=10)
-    # learning_rate_reduce=tf.keras.callbacks.ReduceLROnPlateau(monitor="val_sparse_categorical_accuracy",min_lr=0.001)
-    # callback_list.append(earlystop)
-    # callback_list.append(learning_rate_reduce)
+    earlystop=tf.keras.callbacks.EarlyStopping(patience=10)
+    learning_rate_reduce=tf.keras.callbacks.ReduceLROnPlateau(monitor="val_sparse_categorical_accuracy",min_lr=0.001)
+    callback_list.append(earlystop)
+    callback_list.append(learning_rate_reduce)
     model.fit(
         x=datasets.train_data,
         validation_data=datasets.test_data,
@@ -194,10 +194,10 @@ def main():
 
     datasets = Datasets(ARGS.data, 1)
 
-    model = create_model()
+    #model = create_model()
 
-    # model = ASLModel()
-    # model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
+    model = ASLModel()
+    model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
     checkpoint_path = "checkpoints" + os.sep + \
         "your_model" + os.sep + timestamp + os.sep
     logs_path = "logs" + os.sep + "your_model" + \
@@ -215,15 +215,15 @@ def main():
         os.makedirs(checkpoint_path)
 
 
-    # Compile model graph
-    # model.compile(
-    #     optimizer=model.optimizer,
-    #     loss=model.loss_fn,
-    #     metrics=["sparse_categorical_accuracy"])
+    #Compile model graph
+    model.compile(
+        optimizer=model.optimizer,
+        loss=model.loss_fn,
+        metrics=["sparse_categorical_accuracy"])
 
     
     if ARGS.evaluate:
-        #test(model, datasets.test_data)
+        test(model, datasets.test_data)
         #session(model)
 
         img = preprocessing.image.load_img("asl_dataset/asl_dataset/a/hand1_a_bot_seg_1_cropped.jpeg", target_size=(64, 64))
