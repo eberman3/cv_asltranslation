@@ -54,10 +54,10 @@ class ImageLabelingLogger(tf.keras.callbacks.Callback):
                 plt.subplot(5, 5, count+1)
 
                 correct_class_idx = batch[1][i]
-                print(correct_class_idx)
+                #print(correct_class_idx)
                 probabilities = self.model(np.array([image])).numpy()[0]
                 predict_class_idx = np.argmax(probabilities)
-                print(correct_class_idx)
+                #print(correct_class_idx)
                 if self.task == '1':
                     image = np.clip(image, 0., 1.)
                     plt.imshow(image, cmap='gray')
@@ -90,7 +90,7 @@ class ImageLabelingLogger(tf.keras.callbacks.Callback):
                 break
 
         figure_img = plot_to_image(fig)
-        print(fig)
+        #print(fig)
         file_writer_il = tf.summary.create_file_writer(
             self.logs_path + os.sep + "image_labels")
 
