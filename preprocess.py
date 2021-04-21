@@ -63,15 +63,25 @@ class Datasets():
         file_list = file_list[:hp.preprocess_sample_size]
 
         # Allocate space in memory for images
+                img_size = 64
+        if self.architecture == 'ASL':
+            img_size = 64
+        elif self.architecture == 'VGG':
+            img_size = 224
+        elif self.architecture == 'AlexNet':
+            img_size = 256
+        elif self.architecture == 'LeNet':
+            img_size = 28
+
         data_sample = np.zeros(
-            (hp.preprocess_sample_size, hp.img_size, hp.img_size, 3))
+            (hp.preprocess_sample_size, img_size, img_size, 3))
         print(data_sample.size)
 
 
         # Import images
         for i, file_path in enumerate(file_list):
             img = Image.open(file_path)
-            img = img.resize((hp.img_size, hp.img_size))
+            img = img.resize((img_size, img_size))
             img = np.array(img, dtype=np.float32)
             img /= 255.
 
@@ -154,11 +164,10 @@ class Datasets():
                 preprocessing_function=self.preprocess_fn)
 
         # setting up different sizes
-        img_size = hp.img_size
+        img_size = 64
         if self.architecture == 'ASL':
             img_size = 64
         elif self.architecture == 'VGG':
-            print("VGG architecture size implemented")
             img_size = 224
         elif self.architecture == 'AlexNet':
             img_size = 256
