@@ -193,7 +193,6 @@ class Datasets():
             data_gen = tf.keras.preprocessing.image.ImageDataGenerator(
                 preprocessing_function=self.preprocess_fn)
 
-        # VGG must take images of size 224x224
         img_size = hp.img_size
 
         classes_for_flow = None
