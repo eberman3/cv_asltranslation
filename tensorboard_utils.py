@@ -35,7 +35,7 @@ class ImageLabelingLogger(tf.keras.callbacks.Callback):
         super(ImageLabelingLogger, self).__init__()
 
         self.datasets = datasets
-        self.task = datasets.task
+        self.architecture = datasets.architecture
         self.logs_path = logs_path
 
         print("Done setting up image labeling logger.")
@@ -57,8 +57,8 @@ class ImageLabelingLogger(tf.keras.callbacks.Callback):
                 #print(correct_class_idx)
                 probabilities = self.model(np.array([image])).numpy()[0]
                 predict_class_idx = np.argmax(probabilities)
-                #print(correct_class_idx)
-                if self.task == '1':
+
+                if self.architecture == 'ASL':
                     image = np.clip(image, 0., 1.)
                     plt.imshow(image, cmap='gray')
                 else:
@@ -175,11 +175,11 @@ class ConfusionMatrixLogger(tf.keras.callbacks.Callback):
 class CustomModelSaver(tf.keras.callbacks.Callback):
     """ Custom Keras callback for saving weights of networks. """
 
-    def __init__(self, checkpoint_dir, task, max_num_weights=5):
+    def __init__(self, checkpoint_dir, architecture, max_num_weights=5):
         super(CustomModelSaver, self).__init__()
 
         self.checkpoint_dir = checkpoint_dir
-        self.task = task
+        self.architecture = architecture
         self.max_num_weights = max_num_weights
 
     def on_epoch_end(self, epoch, logs=None):
@@ -196,7 +196,7 @@ class CustomModelSaver(tf.keras.callbacks.Callback):
             save_name = "weights.e{0:03d}-acc{1:.4f}.h5".format(
                 epoch, cur_acc)
 
-            if self.task == '1':
+            if self.architecture == 'ASL':
                 self.model.save_weights(
                     self.checkpoint_dir + os.sep + "your." + save_name)
             #else:

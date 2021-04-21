@@ -10,10 +10,19 @@ import argparse
 import re
 from datetime import datetime
 import tensorflow as tf
+from tensorflow.keras.models import Sequential
 
+from tensorflow.keras import preprocessing
+from tensorflow.keras.layers import \
+    Conv2D, MaxPool2D, Dropout, Flatten, Dense, BatchNormalization, AveragePooling2D
+from tensorflow.keras import models
+from sklearn.model_selection import train_test_split
+import tensorflow.keras
+import hyperparameters as hp
+from tensorflow.keras import regularizers
 from camera import session
 import hyperparameters as hp
-from models import ASLModel
+from models import ASLModel, VGGModel, AlexNetModel, LeNetModel
 from preprocess import Datasets
 from skimage.transform import resize
 from tensorboard_utils import \
@@ -34,6 +43,12 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Let's train some neural nets!",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument(
+        '--architecture',
+        required=True,
+        choices=['ASL', 'VGG', 'AlexNet', 'LeNet'],
+        help='''Which architecture to run'''
+    )
     parser.add_argument(
         '--data',
         #default='..'+os.sep+'data'+os.sep,
@@ -130,7 +145,7 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
             update_freq='batch',
             profile_batch=0),
         ImageLabelingLogger(logs_path, datasets),
-        CustomModelSaver(checkpoint_path, '1', hp.max_num_weights)
+        CustomModelSaver(checkpoint_path, ARGS.architecture, hp.max_num_weights)
     ]
 
     # Include confusion logger in callbacks if flag set
@@ -190,17 +205,52 @@ def main():
     # Run script from location of run.py
     os.chdir(sys.path[0])
 
-    datasets = Datasets(ARGS.data, 1)
+    datasets = Datasets(ARGS.data, ARGS.architecture)
 
-    model = ASLModel()
-    model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
-    checkpoint_path = "checkpoints" + os.sep + \
-        "your_model" + os.sep + timestamp + os.sep
-    logs_path = "logs" + os.sep + "your_model" + \
-        os.sep + timestamp + os.sep
+    if ARGS.architecture == 'ASL':
+        model = ASLModel()
+        img_size = 64
+        model(tf.keras.Input(shape=(img_size, img_size, 3)))
+        checkpoint_path = "checkpoints" + os.sep + \
+            "ASLModel" + os.sep + timestamp + os.sep
+        logs_path = "logs" + os.sep + "ASLModel" + \
+            os.sep + timestamp + os.sep
 
-    # Print summary of model
-    model.summary()
+        # Print summary of model
+        model.summary()
+    elif ARGS.architecture == 'VGG':
+        model = VGGModel()
+        img_size = 224
+        model(tf.keras.Input(shape=(img_size, img_size, 3)))
+        checkpoint_path = "checkpoints" + os.sep + \
+            "VGGModel" + os.sep + timestamp + os.sep
+        logs_path = "logs" + os.sep + "VGGModel" + \
+            os.sep + timestamp + os.sep
+
+        # Print summary of model
+        model.summary()
+    elif ARGS.architecture == 'AlexNet':
+        model = AlexNetModel()
+        img_size = 256
+        model(tf.keras.Input(shape=(img_size, img_size, 3)))
+        checkpoint_path = "checkpoints" + os.sep + \
+            "AlexNetModel" + os.sep + timestamp + os.sep
+        logs_path = "logs" + os.sep + "AlexNetModel" + \
+            os.sep + timestamp + os.sep
+
+        # Print summary of model
+        model.summary()
+    elif ARGS.architecture == 'LeNet':
+        model = LeNetModel()
+        img_size = 28
+        model(tf.keras.Input(shape=(img_size, img_size, 3)))
+        checkpoint_path = "checkpoints" + os.sep + \
+            "LeNetModel" + os.sep + timestamp + os.sep
+        logs_path = "logs" + os.sep + "LeNet" + \
+            os.sep + timestamp + os.sep
+
+        # Print summary of model
+        model.summary()
 
     # Load checkpoints
     if ARGS.load_checkpoint is not None:
@@ -221,12 +271,21 @@ def main():
         test(model, datasets.test_data)
     elif ARGS.video:
         session(model)
+        #session(model)
 
-        # TODO: change the image path to be the image of your choice by changing
-        # the lime-image flag when calling run.py to investigate
-        # i.e. python run.py --evaluate --lime-image test/Bedroom/image_003.jpg
-        # path = ARGS.data + os.sep + ARGS.lime_image
-        # LIME_explainer(model, path, datasets.preprocess_fn)
+
+
+        img = preprocessing.image.load_img("asl_dataset/asl_dataset/a/hand1_a_bot_seg_1_cropped.jpeg", target_size=(64, 64))
+        x = preprocessing.image.img_to_array(img)
+        x = np.expand_dims(x, axis=0)   
+
+        image = np.vstack([x])
+        classes = model.predict(x, batch_size=hp.batch_size)
+        index = np.argmax(classes,axis=1)
+
+        print(classes) #displaying matrix prediction position
+        print(index)
+
     else:
         train(model, datasets, checkpoint_path, logs_path, init_epoch)
 
