@@ -199,7 +199,7 @@ def main():
     model = ASLModel()
     model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
     checkpoint_path = "checkpoints" + os.sep + \
-        "lenet" + os.sep + timestamp + os.sep
+        "vgg" + os.sep + timestamp + os.sep
     logs_path = "logs" + os.sep + "your_model" + \
         os.sep + timestamp + os.sep
 

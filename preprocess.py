@@ -115,7 +115,7 @@ class Datasets():
 
     def preprocess_fn(self, img):
         """ Preprocess function for ImageDataGenerator. """
-
+        self.task == '3'
         if self.task == '3':
             img = tf.keras.applications.vgg16.preprocess_input(img)
         else:
