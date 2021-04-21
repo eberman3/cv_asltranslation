@@ -236,7 +236,7 @@ def main():
     elif ARGS.architecture == 'LeNet':
         model = LeNetModel()
         img_size = 28
-        model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
+        model(tf.keras.Input(shape=(img_size, img_size, 3)))
         checkpoint_path = "checkpoints" + os.sep + \
             "LeNetModel" + os.sep + timestamp + os.sep
         logs_path = "logs" + os.sep + "LeNet" + \
