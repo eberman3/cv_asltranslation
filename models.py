@@ -23,8 +23,8 @@ class ASLModel(tf.keras.Model):
 
 
         self.architecture = [
-            Conv2D(64,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
-            Conv2D(64,(3,3),padding="same",activation="relu",input_shape=((hp.img_size, hp.img_size, 3))),
+            Conv2D(64,(3,3),padding="same",activation="relu",input_shape=((64, 64, 3))),
+            Conv2D(64,(3,3),padding="same",activation="relu",input_shape=((64, 64, 3))),
             MaxPool2D(3,3),
             Conv2D(128,(5,5),padding="same",activation="relu"),
             Conv2D(128,(5,5),padding="same",activation="relu"),
@@ -76,7 +76,7 @@ class VGGModel(tf.keras.Model):
         # Don't change the below:
 
         self.architecture = [
-            Conv2D(input_shape=(hp.img_size,hp.img_size,3),filters=64,kernel_size=(3,3),padding="same", activation="relu"),
+            Conv2D(input_shape=(224,224,3),filters=64,kernel_size=(3,3),padding="same", activation="relu"),
             Conv2D(filters=64,kernel_size=(3,3),padding="same", activation="relu"),
             MaxPool2D(pool_size=(2,2),strides=(2,2)),
             Conv2D(filters=128, kernel_size=(3,3), padding="same", activation="relu"),
@@ -123,7 +123,7 @@ class AlexNetModel(tf.keras.Model):
 
 
         self.architecture =  [
-            Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(hp.img_size,hp.img_size,3)),
+            Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(256,256,3)),
             BatchNormalization(),
             MaxPool2D(pool_size=(3,3), strides=(2,2)),
             Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
@@ -169,7 +169,7 @@ class LeNetModel(tf.keras.Model):
 
 
         self.architecture =  [
-            Conv2D(filters=6, kernel_size=(3, 3), activation='relu', input_shape=(hp.img_size,hp.img_size,3)),
+            Conv2D(filters=6, kernel_size=(3, 3), activation='relu', input_shape=(28,28,3)),
             AveragePooling2D(),
             Conv2D(filters=16, kernel_size=(3, 3), activation='relu'),
             AveragePooling2D(),
