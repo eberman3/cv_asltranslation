@@ -45,13 +45,12 @@ def parse_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         '--architecture',
-        required=True,
+        default = 'ASL',
         choices=['ASL', 'VGG', 'AlexNet', 'LeNet'],
         help='''Which architecture to run'''
     )
     parser.add_argument(
         '--data',
-        #default='..'+os.sep+'data'+os.sep,
         default = 'asl_dataset' + os.sep + 'asl_dataset' + os.sep,
         help='Location where the dataset is stored.')
     parser.add_argument(
@@ -82,58 +81,6 @@ def parse_args():
 
 
     return parser.parse_args()
-
-
-def LIME_explainer(model, path, preprocess_fn):
-    """
-    This function takes in a trained model and a path to an image and outputs 5
-    visual explanations using the LIME model
-    """
-
-    def image_and_mask(title, positive_only=True, num_features=5,
-                       hide_rest=True):
-        temp, mask = explanation.get_image_and_mask(
-            explanation.top_labels[0], positive_only=positive_only,
-            num_features=num_features, hide_rest=hide_rest)
-        plt.imshow(mark_boundaries(temp / 2 + 0.5, mask))
-        plt.title(title)
-        plt.show()
-
-    image = imread(path)
-    if len(image.shape) == 2:
-        image = np.stack([image, image, image], axis=-1)
-    image = preprocess_fn(image)
-    image = resize(image, (hp.img_size, hp.img_size, 3))
-
-    explainer = lime_image.LimeImageExplainer()
-
-    explanation = explainer.explain_instance(
-        image.astype('double'), model.predict, top_labels=5, hide_color=0,
-        num_samples=1000)
-
-    # The top 5 superpixels that are most positive towards the class with the
-    # rest of the image hidden
-    image_and_mask("Top 5 superpixels", positive_only=True, num_features=5,
-                   hide_rest=True)
-
-    # The top 5 superpixels with the rest of the image present
-    image_and_mask("Top 5 with the rest of the image present",
-                   positive_only=True, num_features=5, hide_rest=False)
-
-    # The 'pros and cons' (pros in green, cons in red)
-    image_and_mask("Pros(green) and Cons(red)",
-                   positive_only=False, num_features=10, hide_rest=False)
-
-    # Select the same class explained on the figures above.
-    ind = explanation.top_labels[0]
-    # Map each explanation weight to the corresponding superpixel
-    dict_heatmap = dict(explanation.local_exp[ind])
-    heatmap = np.vectorize(dict_heatmap.get)(explanation.segments)
-    plt.imshow(heatmap, cmap='RdBu', vmin=-heatmap.max(), vmax=heatmap.max())
-    plt.colorbar()
-    plt.title("Map each explanation weight to the corresponding superpixel")
-    plt.show()
-
 
 def train(model, datasets, checkpoint_path, logs_path, init_epoch):
     """ Training routine. """
