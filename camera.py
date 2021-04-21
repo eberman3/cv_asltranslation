@@ -1,9 +1,5 @@
 from cv2 import cv2
 import numpy as np
-import onnx
-import onnxruntime as ort
-import keras2onnx
-from tensorflow.keras import preprocessing
 
 from models import ASLModel
 import hyperparameters as hp
@@ -20,15 +16,11 @@ def center_crop(frame):
     return frame
 
 def session(model):
-    # output_model_path = "keras_efficientNet.onnx"
-    # onnx_model = keras2onnx.convert_keras(model, model.name)
-    # keras2onnx.save_model(onnx_model, output_model_path)
     
-    index_to_letter = list('ABCDEFGHIJKLMNOPQRSTUVWXY')
+    index_to_letter = list('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ')
     mean = 0.485 * 225.
     std = 0.229 * 225.
 
-    # ort_session = ort.InferenceSession(output_model_path)
     cap = cv2.VideoCapture(0)
     while True:
         _, frame = cap.read()
@@ -36,10 +28,10 @@ def session(model):
         frame = center_crop(frame)
         #frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 
-        img = preprocessing.image.load_img("asl_dataset/asl_dataset/a/hand1_a_bot_seg_1_cropped.jpeg", target_size=(64, 64))
-        x = preprocessing.image.img_to_array(img)
+        #img = preprocessing.image.load_img("asl_dataset/asl_dataset/a/hand1_a_bot_seg_1_cropped.jpeg", target_size=(64, 64))
+        #x = preprocessing.image.img_to_array(img)
         x = cv2.resize(frame, (64, 64))
-        #x = (x - mean) / std
+        x = (x - mean) / std
 
         x = np.array(x)
         x = np.expand_dims(x, axis=0)   

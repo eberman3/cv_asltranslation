@@ -10,17 +10,8 @@ import argparse
 import re
 from datetime import datetime
 import tensorflow as tf
-from keras.models import Sequential
 
-from tensorflow.keras import preprocessing
-from tensorflow.keras.layers import \
-    Conv2D, MaxPool2D, Dropout, Flatten, Dense, BatchNormalization, AveragePooling2D
-from tensorflow.keras import models
-from sklearn.model_selection import train_test_split
-import keras
-import hyperparameters as hp
-from keras import regularizers
-#from camera import session
+from camera import session
 import hyperparameters as hp
 from models import ASLModel
 from preprocess import Datasets
@@ -67,6 +58,13 @@ def parse_args():
         help='''Skips training and evaluates on the test set once.
         You can use this to test an already trained model by loading
         its checkpoint.''')
+    parser.add_argument(
+        '--video',
+        action='store_true',
+        help='''Skips training and runs the live video predictor.
+        You can use this to predict with an already trained model by loading
+        its checkpoint.''')
+
 
     return parser.parse_args()
 
@@ -194,18 +192,16 @@ def main():
 
     datasets = Datasets(ARGS.data, 1)
 
-    #model = create_model()
-
     model = ASLModel()
     model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
     checkpoint_path = "checkpoints" + os.sep + \
-        "vgg" + os.sep + timestamp + os.sep
+        "your_model" + os.sep + timestamp + os.sep
     logs_path = "logs" + os.sep + "your_model" + \
         os.sep + timestamp + os.sep
 
-    # # Print summary of model
+    # Print summary of model
     model.summary()
-    
+
     # Load checkpoints
     if ARGS.load_checkpoint is not None:
         model.load_weights(ARGS.load_checkpoint, by_name=False)
@@ -214,29 +210,17 @@ def main():
     if not ARGS.evaluate and not os.path.exists(checkpoint_path):
         os.makedirs(checkpoint_path)
 
-
-    #Compile model graph
+    # Compile model graph
     model.compile(
         optimizer=model.optimizer,
         loss=model.loss_fn,
         metrics=["sparse_categorical_accuracy"])
 
-    
+
     if ARGS.evaluate:
         test(model, datasets.test_data)
-        #session(model)
-
-        img = preprocessing.image.load_img("asl_dataset/asl_dataset/a/hand1_a_bot_seg_1_cropped.jpeg", target_size=(64, 64))
-        x = preprocessing.image.img_to_array(img)
-        x = np.expand_dims(x, axis=0)   
-
-        image = np.vstack([x])
-        classes = model.predict(x, batch_size=hp.batch_size)
-        index = np.argmax(classes,axis=1)
- 
-
-        print(classes) #displaying matrix prediction position
-        print(index)
+    elif ARGS.video:
+        session(model)
 
         # TODO: change the image path to be the image of your choice by changing
         # the lime-image flag when calling run.py to investigate
@@ -245,36 +229,6 @@ def main():
         # LIME_explainer(model, path, datasets.preprocess_fn)
     else:
         train(model, datasets, checkpoint_path, logs_path, init_epoch)
-
-def create_model():
-    
-    model = Sequential()
-    
-    model.add(Conv2D(16, kernel_size = [3,3], padding = 'same', activation = 'relu', input_shape = (64,64,3)))
-    model.add(Conv2D(32, kernel_size = [3,3], padding = 'same', activation = 'relu'))
-    model.add(MaxPool2D(pool_size = [3,3]))
-    
-    model.add(Conv2D(32, kernel_size = [3,3], padding = 'same', activation = 'relu'))
-    model.add(Conv2D(64, kernel_size = [3,3], padding = 'same', activation = 'relu'))
-    model.add(MaxPool2D(pool_size = [3,3]))
-    
-    model.add(Conv2D(128, kernel_size = [3,3], padding = 'same', activation = 'relu'))
-    model.add(Conv2D(256, kernel_size = [3,3], padding = 'same', activation = 'relu'))
-    model.add(MaxPool2D(pool_size = [3,3]))
-    
-    model.add(BatchNormalization())
-    
-    model.add(Flatten())
-    model.add(Dropout(0.5))
-    model.add(Dense(512, activation = 'relu', kernel_regularizer = regularizers.l2(0.001)))
-    model.add(Dense(hp.num_classes, activation = 'softmax'))
-    
-    model.compile(optimizer = 'adam', loss = keras.losses.categorical_crossentropy, metrics = ["accuracy"])
-    
-    print("MODEL CREATED")
-    model.summary()
-    
-    return model
 
 
 # Make arguments global
