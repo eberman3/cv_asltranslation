@@ -10,19 +10,19 @@ import argparse
 import re
 from datetime import datetime
 import tensorflow as tf
-from keras.models import Sequential
+from tensorflow.keras.models import Sequential
 
 from tensorflow.keras import preprocessing
 from tensorflow.keras.layers import \
     Conv2D, MaxPool2D, Dropout, Flatten, Dense, BatchNormalization, AveragePooling2D
 from tensorflow.keras import models
 from sklearn.model_selection import train_test_split
-import keras
+import tensorflow.keras
 import hyperparameters as hp
-from keras import regularizers
+from tensorflow.keras import regularizers
 #from camera import session
 import hyperparameters as hp
-from models import ASLModel
+from models import ASLModel, VGGModel, AlexNetModel, LeNetModel
 from preprocess import Datasets
 from skimage.transform import resize
 from tensorboard_utils import \
@@ -43,6 +43,12 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Let's train some neural nets!",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument(
+        '--architecture',
+        required=True,
+        choices=['ASL', 'VGG', 'AlexNet', 'LeNet'],
+        help='''Which architecture to run'''
+    )
     parser.add_argument(
         '--data',
         #default='..'+os.sep+'data'+os.sep,
@@ -132,7 +138,7 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
             update_freq='batch',
             profile_batch=0),
         ImageLabelingLogger(logs_path, datasets),
-        CustomModelSaver(checkpoint_path, '1', hp.max_num_weights)
+        CustomModelSaver(checkpoint_path, ARGS.architecture, hp.max_num_weights)
     ]
 
     # Include confusion logger in callbacks if flag set
@@ -142,10 +148,10 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch):
     # Begin training
     print(init_epoch)
 
-    # earlystop=tf.keras.callbacks.EarlyStopping(patience=10)
-    # learning_rate_reduce=tf.keras.callbacks.ReduceLROnPlateau(monitor="val_sparse_categorical_accuracy",min_lr=0.001)
-    # callback_list.append(earlystop)
-    # callback_list.append(learning_rate_reduce)
+    earlystop=tf.keras.callbacks.EarlyStopping(patience=10)
+    learning_rate_reduce=tf.keras.callbacks.ReduceLROnPlateau(monitor="val_sparse_categorical_accuracy",min_lr=0.001)
+    callback_list.append(earlystop)
+    callback_list.append(learning_rate_reduce)
     model.fit(
         x=datasets.train_data,
         validation_data=datasets.test_data,
@@ -192,17 +198,52 @@ def main():
     # Run script from location of run.py
     os.chdir(sys.path[0])
 
-    datasets = Datasets(ARGS.data, 1)
+    datasets = Datasets(ARGS.data, ARGS.architecture)
 
-    model = ASLModel()
-    model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
-    checkpoint_path = "checkpoints" + os.sep + \
-        "your_model" + os.sep + timestamp + os.sep
-    logs_path = "logs" + os.sep + "your_model" + \
-        os.sep + timestamp + os.sep
+    if ARGS.architecture == 'ASL':
+        model = ASLModel()
+        img_size = 64
+        model(tf.keras.Input(shape=(img_size, img_size, 3)))
+        checkpoint_path = "checkpoints" + os.sep + \
+            "ASLModel" + os.sep + timestamp + os.sep
+        logs_path = "logs" + os.sep + "ASLModel" + \
+            os.sep + timestamp + os.sep
 
-    # Print summary of model
-    model.summary()
+        # Print summary of model
+        model.summary()
+    elif ARGS.architecture == 'VGG':
+        model = VGGModel()
+        img_size = 224
+        model(tf.keras.Input(shape=(img_size, img_size, 3)))
+        checkpoint_path = "checkpoints" + os.sep + \
+            "VGGModel" + os.sep + timestamp + os.sep
+        logs_path = "logs" + os.sep + "VGGModel" + \
+            os.sep + timestamp + os.sep
+
+        # Print summary of model
+        model.summary()
+    elif ARGS.architecture == 'AlexNet':
+        model = AlexNetModel()
+        img_size = 256
+        model(tf.keras.Input(shape=(img_size, img_size, 3)))
+        checkpoint_path = "checkpoints" + os.sep + \
+            "AlexNetModel" + os.sep + timestamp + os.sep
+        logs_path = "logs" + os.sep + "AlexNetModel" + \
+            os.sep + timestamp + os.sep
+
+        # Print summary of model
+        model.summary()
+    elif ARGS.architecture == 'LeNet':
+        model = LeNetModel()
+        img_size = 28
+        model(tf.keras.Input(shape=(hp.img_size, hp.img_size, 3)))
+        checkpoint_path = "checkpoints" + os.sep + \
+            "LeNetModel" + os.sep + timestamp + os.sep
+        logs_path = "logs" + os.sep + "LeNet" + \
+            os.sep + timestamp + os.sep
+
+        # Print summary of model
+        model.summary()
 
     # Load checkpoints
     if ARGS.load_checkpoint is not None:
@@ -212,18 +253,18 @@ def main():
     if not ARGS.evaluate and not os.path.exists(checkpoint_path):
         os.makedirs(checkpoint_path)
 
-    model = create_model()
+    #model = create_model()
 
     # Compile model graph
-    # model.compile(
-    #     optimizer=model.optimizer,
-    #     loss=model.loss_fn,
-    #     metrics=["sparse_categorical_accuracy"])
+    model.compile(
+        optimizer=model.optimizer,
+        loss=model.loss_fn,
+        metrics=["sparse_categorical_accuracy"])
 
     
 
     if ARGS.evaluate:
-        #test(model, datasets.test_data)
+        test(model, datasets.test_data)
         #session(model)
 
 
@@ -247,36 +288,6 @@ def main():
         # LIME_explainer(model, path, datasets.preprocess_fn)
     else:
         train(model, datasets, checkpoint_path, logs_path, init_epoch)
-
-def create_model():
-    
-    model = Sequential()
-    
-    model.add(Conv2D(16, kernel_size = [3,3], padding = 'same', activation = 'relu', input_shape = (64,64,3)))
-    model.add(Conv2D(32, kernel_size = [3,3], padding = 'same', activation = 'relu'))
-    model.add(MaxPool2D(pool_size = [3,3]))
-    
-    model.add(Conv2D(32, kernel_size = [3,3], padding = 'same', activation = 'relu'))
-    model.add(Conv2D(64, kernel_size = [3,3], padding = 'same', activation = 'relu'))
-    model.add(MaxPool2D(pool_size = [3,3]))
-    
-    model.add(Conv2D(128, kernel_size = [3,3], padding = 'same', activation = 'relu'))
-    model.add(Conv2D(256, kernel_size = [3,3], padding = 'same', activation = 'relu'))
-    model.add(MaxPool2D(pool_size = [3,3]))
-    
-    model.add(BatchNormalization())
-    
-    model.add(Flatten())
-    model.add(Dropout(0.5))
-    model.add(Dense(512, activation = 'relu', kernel_regularizer = regularizers.l2(0.001)))
-    model.add(Dense(hp.num_classes, activation = 'softmax'))
-    
-    model.compile(optimizer = 'adam', loss = keras.losses.categorical_crossentropy, metrics = ["accuracy"])
-    
-    print("MODEL CREATED")
-    model.summary()
-    
-    return model
 
 
 # Make arguments global

@@ -18,10 +18,10 @@ class Datasets():
     for preprocessing.
     """
 
-    def __init__(self, data_path, task):
+    def __init__(self, data_path, architecture):
 
         self.data_path = data_path
-        self.task = task
+        self.architecture = architecture
 
         # Dictionaries for (label index) <--> (class name)
         self.idx_to_class = {}
@@ -37,7 +37,8 @@ class Datasets():
 
         # Setup data generators
         ds_asl_dir = data_path
-        data_gen, self.train_data, self.test_data = self.get_data(path=ds_asl_dir, shuffle=True, augment=True)
+        data_gen, self.train_data, self.test_data = self.get_data(path=ds_asl_dir,
+         shuffle=True, augment=True)
 
     def calc_mean_and_std(self):
         """ Calculate mean and standard deviation of a sample of the
@@ -80,11 +81,6 @@ class Datasets():
 
             data_sample[i] = img
 
-        # TODO: Calculate the pixel-wise mean and standard deviation
-        #       of the images in data_sample and store them in
-        #       self.mean and self.std respectively.
-        # ==========================================================
-
         self.mean[0] = np.mean(data_sample[:,:,:,0])
         self.mean[1] = np.mean(data_sample[:,:,:,1])
         self.mean[2] = np.mean(data_sample[:,:,:,2])
@@ -99,6 +95,7 @@ class Datasets():
 
         print("Dataset std: [{0:.4f}, {1:.4f}, {2:.4f}]".format(
             self.std[0], self.std[1], self.std[2]))
+        print(self.architecture)
 
     def standardize(self, img):
         """ Function for applying standardization to an input image.
@@ -116,38 +113,12 @@ class Datasets():
     def preprocess_fn(self, img):
         """ Preprocess function for ImageDataGenerator. """
 
-        if self.task == '3':
+        if self.architecture == 'VGG':
+            print("Now doing VGG Preprocessing.")
             img = tf.keras.applications.vgg16.preprocess_input(img)
         else:
             img = img / 255.
             img = self.standardize(img)
-        return img
-
-    def custom_preprocess_fn(self, img):
-        """ Custom preprocess function for ImageDataGenerator. """
-
-        if self.task == '3':
-            img = tf.keras.applications.vgg16.preprocess_input(img)
-        else:
-            img = img / 255.
-            img = self.standardize(img)
-
-        # EXTRA CREDIT:
-        # Write your own custom data augmentation procedure, creating
-        # an effect that cannot be achieved using the arguments of
-        # ImageDataGenerator. This can potentially boost your accuracy
-        # in the validation set. Note that this augmentation should
-        # only be applied to some input images, so make use of the
-        # 'random' module to make sure this happens. Also, make sure
-        # that ImageDataGenerator uses *this* function for preprocessing
-        # on augmented data.
-
-        if random.random() < 0.3:
-            img = img + tf.random.uniform(
-                (hp.img_size, hp.img_size, 1),
-                minval=-0.1,
-                maxval=0.1)
-
         return img
 
     def get_data(self, path, shuffle, augment):
@@ -167,15 +138,6 @@ class Datasets():
         """
 
         if augment:
-            # TODO: Use the arguments of ImageDataGenerator()
-            #       to augment the data. Leave the
-            #       preprocessing_function argument as is unless
-            #       you have written your own custom preprocessing
-            #       function (see custom_preprocess_fn()).
-            #
-            # Documentation for ImageDataGenerator: https://bit.ly/2wN2EmK
-            #
-            # ============================================================
 
             data_gen = tf.keras.preprocessing.image.ImageDataGenerator(
                 preprocessing_function=self.preprocess_fn,
@@ -186,34 +148,29 @@ class Datasets():
                 width_shift_range=0.1,
                 height_shift_range=0.1,
                 validation_split=0.2)
-
-            # ============================================================
         else:
             # Don't modify this
             data_gen = tf.keras.preprocessing.image.ImageDataGenerator(
                 preprocessing_function=self.preprocess_fn)
 
-        # VGG must take images of size 224x224
+        # setting up different sizes
         img_size = hp.img_size
+        if self.architecture == 'ASL':
+            img_size = 64
+        elif self.architecture == 'VGG':
+            print("VGG architecture size implemented")
+            img_size = 224
+        elif self.architecture == 'AlexNet':
+            img_size = 256
+        elif self.architecture == 'LeNet':
+            img_size = 28
+
 
         classes_for_flow = None
 
         # Make sure all data generators are aligned in label indices
         if bool(self.idx_to_class):
             classes_for_flow = self.classes
-
-        # Form image data generator from directory structure
-        # data_gen = data_gen.flow_from_directory(
-        #     path,
-        #     target_size=(img_size, img_size),
-        #     class_mode='sparse',
-        #     batch_size=hp.batch_size,
-        #     shuffle=shuffle,
-        #     classes=classes_for_flow)
-
-        #should class mode be sparse?
-        #should shuffle be turned on?
-        #should classes be = classes_for_flow?
 
         train_data = data_gen.flow_from_directory(directory=path, target_size=(img_size, img_size),
                                                      class_mode="sparse", batch_size=hp.batch_size, classes=classes_for_flow, subset="training")
