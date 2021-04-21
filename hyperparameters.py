@@ -13,7 +13,7 @@ num_epochs = 50
 learning_rate = 1e-4
 
 
-img_size = 28
+img_size = 224
 #For AlexNet must be 256
 #For VGG must be 224
 #For LeNet5 must be 28
