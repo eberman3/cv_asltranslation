@@ -9,5 +9,5 @@ To load a checkpoint from a previously trained model, use the `--load-checkpoint
 
 To evaluate the model, use the evaluate flag and load a checkpoint. For example, run: `python run.py --load_checkpoint checkpoints/ASLModel/042121-213405/your.weights.e031-acc0.9085.h5 --evaluate`.
 
-To run the real-time video to ASL caption componenet, use the video flag and load a checkpoint. For example, run: `python run.py --load_checkpoint checkpoints/ASLModel/042121-213405/your.weights.e031-acc0.9085.h5 --video`. 
+To run the real-time video to ASL caption componet, use the video flag and load a checkpoint. For example, run: `python run.py --load_checkpoint checkpoints/ASLModel/042121-213405/your.weights.e031-acc0.9085.h5 --video`. 
 
